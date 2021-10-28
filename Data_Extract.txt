@@ -1,0 +1,6 @@
+1. Extracting data from StackExchange Website
+
+i. select top 50000 * from posts where posts.ViewCount > 127400 ORDER BY posts.ViewCount desc
+ii.select top 50000 * from posts where posts.ViewCount < 127400 ORDER BY posts.ViewCount desc
+iii.select top 50000 * from posts where posts.ViewCount < 74595 ORDER BY posts.ViewCount desc
+iv.select top 50000 * from posts where posts.ViewCount < 53210 ORDER BY posts.ViewCount desc

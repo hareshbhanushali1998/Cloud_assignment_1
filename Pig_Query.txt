@@ -1,0 +1,33 @@
+1. Pig Loading Data
+
+data1 = LOAD 'clean_data_csv.csv' USING PigStorage(',') AS(dummy:chararray,Id:chararray, PostTypeId:chararray, AcceptedAnswerId:chararray, ParentId:chararray, CreationDate:chararray, DeletionDate:chararray, Score:int, ViewCount:int,Body:chararray, OwnerUserId:chararray, OwnerDisplayName:chararray, LastEditorUserId:chararray, LastEditorDisplayName:chararray, LastEditDate:chararray, LastActivityDate:chararray, Title:chararray,Tags:chararray, AnswerCount:chararray, CommentCount:chararray, FavoriteCount:chararray, ClosedDate:chararray, CommunityOwnedDate:chararray, ContentLicense:chararray);
+
+data2 = LOAD 'clean_data_csv1.csv' USING PigStorage(',') AS(dummy:chararray,Id:chararray, PostTypeId:chararray, AcceptedAnswerId:chararray, ParentId:chararray, CreationDate:chararray, DeletionDate:chararray, Score:int, ViewCount:int,Body:chararray, OwnerUserId:chararray, OwnerDisplayName:chararray, LastEditorUserId:chararray, LastEditorDisplayName:chararray, LastEditDate:chararray, LastActivityDate:chararray, Title:chararray,Tags:chararray, AnswerCount:chararray, CommentCount:chararray, FavoriteCount:chararray, ClosedDate:chararray, CommunityOwnedDate:chararray, ContentLicense:chararray);
+
+data3 = LOAD 'clean_data_csv2.csv' USING PigStorage(',') AS(dummy:chararray,Id:chararray, PostTypeId:chararray, AcceptedAnswerId:chararray, ParentId:chararray, CreationDate:chararray, DeletionDate:chararray, Score:int, ViewCount:int,Body:chararray, OwnerUserId:chararray, OwnerDisplayName:chararray, LastEditorUserId:chararray, LastEditorDisplayName:chararray, LastEditDate:chararray, LastActivityDate:chararray, Title:chararray,Tags:chararray, AnswerCount:chararray, CommentCount:chararray, FavoriteCount:chararray, ClosedDate:chararray, CommunityOwnedDate:chararray, ContentLicense:chararray);
+
+data4 = LOAD 'clean_data_csv3.csv' USING PigStorage(',') AS(dummy:chararray,Id:chararray, PostTypeId:chararray, AcceptedAnswerId:chararray, ParentId:chararray, CreationDate:chararray, DeletionDate:chararray, Score:int, ViewCount:int,Body:chararray, OwnerUserId:chararray, OwnerDisplayName:chararray, LastEditorUserId:chararray, LastEditorDisplayName:chararray, LastEditDate:chararray, LastActivityDate:chararray, Title:chararray,Tags:chararray, AnswerCount:chararray, CommentCount:chararray, FavoriteCount:chararray, ClosedDate:chararray, CommunityOwnedDate:chararray, ContentLicense:chararray);
+
+
+2. Transforming
+
+a = FOREACH data1 GENERATE $1,$2,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$23;
+b = FOREACH data2 GENERATE $1,$2,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$23;
+c = FOREACH data3 GENERATE $1,$2,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$23;
+d = FOREACH data4 GENERATE $1,$2,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$23;
+
+
+3. Merging Data
+
+merged_data = UNION a,b,c,d;
+
+Data Cleaning Query is written in Data_Cleaning_Pig.txt file
+
+4. Storing data
+
+STORE non_null_data INTO 'clean_stack_data.csv' USING PigStorage(',');
+
+
+5. To copy data from local to HDFS 
+
+hdfs dfs -copyFromLocal /home/haresh_bhanushali2/clean_stack_data.csv /

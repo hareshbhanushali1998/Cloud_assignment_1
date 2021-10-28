@@ -1,0 +1,11 @@
+1. Removing HTML tags
+
+sed -n '/^$/!{s/<[^>]*>//g;p;}' 'QueryResults (1).csv' > no_html_tags.csv
+
+2. Removing Punctuations
+
+awk '{gsub(/[[:punct:]]/, "")} 1, $8' no_html_tags.csv > no_punc.csv
+
+3. Removing Null Values
+
+non_null_data = filter merged_data by (OwnerUserId is not null) and (Score is not null);

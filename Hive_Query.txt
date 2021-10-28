@@ -1,0 +1,40 @@
+## HIVE Creating Table
+
+CREATE TABLE haresh_stack_data(Id INT ,PostTypeId INT,AcceptedAnswerId INT,CreationDate STRING,Score INT,ViewCount INT,Body VARCHAR(10000),
+OwnerUserId INT,OwnerDisplayName STRING,LastEditorUserId INT,
+LastEditorDisplayName STRING,LastEditDate STRING,LastActivityDate STRING,Title STRING,Tags,STRING,AnswerCount INT,ContentLicense STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+
+
+## HIVE Loading Data in Table
+
+load data inpath 'hdfs://cloud-assignment-m/clean_stack_data.csv' into table haresh_stack_data;
+
+
+## HIVE Query
+
+1.The top 10 posts by score.
+
+select id, title, score from haresh_stack_data order by score desc limit 10;
+
+2.The top 10 users by postscore 
+
+select OwnerUserId, sum(Score) as OverallScore from haresh_stack_data group by OwnerUserId order by OverallScore desc limit 10;
+
+3.The number of distinct users, who used the word “cloud” in one of their posts.
+
+  i.select count (distinct OwnerUserId) from haresh_stack_data where (lower(body) like '%cloud%' or lower(title) like '%cloud%' or lower(tags) like '%cloud%');
+
+  ii. select count (distinct OwnerUserId) from haresh_stack_data where (body like '%cloud%' or tag like '%cloud%' or title like '%cloud%');
+
+4.Using Hive to calculate the per-user TF- IDF of the top 10 terms for each of the top 10 users
+
+  i.create temporary macro max2(x INT, y INT) if(x>y,x,y);
+  ii.create temporary macro tfidf(tf FLOAT, df_t INT, n_docs INT) tf * (log(10, CAST(n_docs as FLOAT)/max2(1,df_t)) + 1.0);
+  iii.create table highest_users as select Owneruserid, sum(Score) as OverallScore from haresh_stack_data group by OwnerUserId order by OverallScore desc limit 10;
+  iv.create table new_users as select d.OwnerUserID,title from haresh_stack_data d join highest_users t on d.OwnerUserID = t.OwnerUserID;
+  v.create or replace view view_user as select OwnerUserId, eachword from new_users LATERAL VIEW explode(tokenize(Title, True)) t as eachword where not is_stopword(eachword);
+  vi.create or replace view user_tf as select OwnerUserid, eachword, freq from (select OwnerUserId, tf(eachword) as word2freq from view_user group by ownerUserId) t LATERAL VIEW explode(word2freq) t2 as eachword, freq;
+  vii.create or replace view term_freq as select * from (select ownerUserId, eachword, freq, rank() over (partition by OwnerUserId order by freq desc) as rank from user_tf) t where rank < 10;
+  viii.select Owneruserid, eachword, freq from term_freq;
+
+
